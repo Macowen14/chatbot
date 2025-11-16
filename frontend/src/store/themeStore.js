@@ -1,12 +1,12 @@
 // themeStore.js (Revised with persistence middleware)
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware"; 
+import { persist, createJSONStorage } from "zustand/middleware";
 
 const useThemeStore = create(
 	persist(
 		// 👈 Wrap your state creator with persist
 		(set) => ({
-			theme: "Deep Space", 
+			theme: "Deep Space",
 			setTheme: (newTheme) => {
 				set({ theme: newTheme });
 			},
