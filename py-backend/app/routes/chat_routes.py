@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 import asyncpg
 import os
 from app.utils.database import get_db
-from app.utils.models.schemas import Chat
+from app.models.schemas import Chat
 from app.utils.auth import get_current_user
 
 router = APIRouter()

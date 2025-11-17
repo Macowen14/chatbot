@@ -1,4 +1,4 @@
-from app.utils.models.schemas import Message
+from app.models.schemas import Message
 
 SYSTEM_PROMPT = """
 You are a helpful and concise assistant. Your task is to respond to the user's latest question.
@@ -16,6 +16,7 @@ User's current question: "{current_message}"
 
 async def get_chat_history(db, chat_id: int, limit: int = 10) -> list[Message]:
     """Retrieves the last N messages for a chat."""
+    print(f"Fetching chat history for chat_id: {chat_id}, limit: {limit}")
     query = """
         SELECT role, content, code
         FROM messages
@@ -24,11 +25,13 @@ async def get_chat_history(db, chat_id: int, limit: int = 10) -> list[Message]:
         LIMIT $2
     """
     rows = await db.fetch(query, chat_id, limit)
+    print(f"Retrieved {len(rows)} messages from the database")
     # Reverse to maintain chronological order for the prompt
     return [Message(**dict(row)) for row in reversed(rows)]
 
 def build_context_prompt(history: list[Message], current_message: str) -> str:
     """Formats the history into a single context string for the prompt."""
+    print("Building context prompt")
     history_context = ""
     for msg in history:
         # Format the message for the model context

@@ -2,7 +2,7 @@ from fastapi import Depends, HTTPException, APIRouter
 from fastapi.responses import JSONResponse
 import os
 from app.utils.database import get_db
-from app.utils.models.schemas import Message
+from app.models.schemas import Message
 from app.utils.auth import get_current_user
 
 router = APIRouter()

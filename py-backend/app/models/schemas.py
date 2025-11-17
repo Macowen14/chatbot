@@ -35,7 +35,7 @@ class ChatRequest(BaseModel):
     # Schema for the /assistant/send route
     chat_id: int
     message: str
-    model: str = "gemma3:4b" # Default to an Ollama model
+    model: str = "ollama:gemma3:4b" # Default to an Ollama model
     is_cloud: bool = False # Flag to determine if Ollama is local or cloud
 
 class LLMConfig(BaseModel):

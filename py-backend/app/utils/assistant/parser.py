@@ -12,6 +12,7 @@ def parse_llm_response(text: str) -> Tuple[str, Optional[str]]:
     
     Returns: (main_content, code_block_content)
     """
+    print(f"Parsing LLM response: {text}")
     match = CODE_BLOCK_RE.search(text)
     
     if match:
@@ -26,7 +27,9 @@ def parse_llm_response(text: str) -> Tuple[str, Optional[str]]:
         main_content = text.replace(full_code_block, '').strip()
 
         # For saving to DB, we just save the code itself.
+        print(f"Extracted code block: {code_content}")
         return main_content, code_content
     else:
         # No code block found
+        print("No code block found in response")
         return text.strip(), None
