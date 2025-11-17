@@ -5,11 +5,11 @@ import json
 from app.utils.database import get_db
 from app.utils.auth import get_current_user
 from app.models.schemas import ChatRequest
-from app.utils.assistant.model_selector import llm_service, get_ollama_stream, get_gemini_stream
+from app.utils.assistant.model_selector import llm_service
 from app.utils.assistant.chat_utils import get_chat_history, build_context_prompt
 from app.utils.assistant.parser import parse_llm_response
 
-router = APIRouter(prefix="/assistant", tags=["assistant"])
+router = APIRouter()
 
 def authenticated_user():
     return Depends(get_current_user)

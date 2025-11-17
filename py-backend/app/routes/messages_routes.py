@@ -25,28 +25,4 @@ async def get_messages(chat_id: int, db=Depends(get_db), user_id=authenticated_u
     result = await db.fetch(query, chat_id)
     return JSONResponse(content=[dict(row) for row in result])
 
-@router.post("/messages/send")
-async def save_message(message: Message, db=Depends(get_db), user_id=authenticated_user()):
-    """
-    Save a new message for a chat.
-    """
-    if not message.chat_id or not message.content or message.content.strip() == "":
-        raise HTTPException(status_code=400, detail="chatId and content are required")
-    
-    if message.role == "assistant":
-        query = """
-            INSERT INTO messages (chat_id, role, content, code)
-            VALUES ($1, $2, $3, $4)
-            RETURNING id, chat_id, role, content, code, created_at
-        """
-        params = [message.chat_id, message.role, message.content, message.code]
-    else:
-        query = """
-            INSERT INTO messages (chat_id, role, content)
-            VALUES ($1, $2, $3)
-            RETURNING id, chat_id, role, content, created_at
-        """
-        params = [message.chat_id, message.role, message.content]
-    
-    result = await db.fetchrow(query, *params)
-    return JSONResponse(content=dict(result), status_code=201)
+

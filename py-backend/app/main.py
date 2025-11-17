@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .routes import chat_routes, auth_routes, messages_routes
+from .routes import chat_routes, auth_routes, messages_routes, assistant_routes
 
 app = FastAPI(title="Chatbot API", version="1.0")
 
@@ -17,6 +17,7 @@ app.add_middleware(
 app.include_router(auth_routes.router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(chat_routes.router, prefix="/api/chat", tags=["Chat Lists"])
 app.include_router(messages_routes.router, prefix='/api/message', tags=['Messages'])
+app.include_router(assistant_routes.router, prefix='/api/assistant', tags=['AI assistant'])
 
 # Health check route to show the server is live
 @app.get("/", tags=["Health Check"])
