@@ -5,35 +5,17 @@ import json
 from app.utils.database import get_db
 from app.utils.auth import get_current_user
 from app.models.schemas import ChatRequest
-from app.utils.assistant.model_selector import llm_service, get_ollama_stream, get_gemini_stream
+from app.utils.assistant.model_selector import llm_service
+from app.utils.assistant.stream_utils import get_ollama_stream, get_gemini_stream
 from app.utils.assistant.chat_utils import get_chat_history, build_context_prompt
 from app.utils.assistant.parser import parse_llm_response
+from app.utils.extract.file_extract import extract_text_from_file
 import uuid # For generating unique file IDs
 import os # For local file operations
 
 router = APIRouter(prefix="/assistant", tags=["assistant"])
 
 # --- Helper function for text extraction (Placeholder for complexity) ---
-async def extract_text_from_file(file: UploadFile) -> str:
-    """
-    Placeholder for actual text extraction logic (e.g., using libraries like 
-    python-docx, pypdf, or Tesseract for images).
-    For now, just return a string indicating file receipt and size.
-    """
-    # NOTE: In a real application, you would implement specific logic here
-    # to parse PDFs, DOCX, etc., based on file.content_type.
-    
-    # Read the file content for simple text files or a limited read
-    content = await file.read()
-    
-    # Simple logic for demonstration:
-    if file.content_type == "text/plain":
-        # Decode and return text content
-        return content.decode('utf-8')
-    elif file.content_type.startswith("image/") or file.content_type.endswith("/pdf"):
-        return f"Document content extracted successfully (Type: {file.content_type}, Size: {len(content)} bytes)."
-    
-    return f"File '{file.filename}' uploaded. Text extraction placeholder used."
 
 def authenticated_user():
     return Depends(get_current_user)
@@ -166,14 +148,16 @@ async def send_chat_stream(
                 )
 
                 async for chunk in stream:
-                    # Gemini chunks have the text content directly on the chunk object
-                    content_chunk = chunk.text
+                 # Gemini chunks may not always contain 'text'
+                    content_chunk = getattr(chunk, "text", "") or ""
+
                     if content_chunk:
                         full_response_text += content_chunk
+
                         # SSE format: data: <JSON object>\n\n
                         yield f"data: {json.dumps({'content': content_chunk})}\n\n"
-                
-                
+
+                            
             # 5. After the stream ends, parse and save the full assistant message
             
             # Use the markdown parser to separate content and code
