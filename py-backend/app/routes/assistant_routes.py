@@ -103,7 +103,8 @@ async def send_chat_stream(
             
             # Use the markdown parser to separate content and code
             content, code = parse_llm_response(full_response_text)
-            print(f"Parsed response: content={content[:50]}..., code={code[:50]}...")
+            code_preview = code[:50] if code else None  # Check if code is not None before slicing
+            print(f"Parsed response: content={content[:50]}..., code={code_preview}...")
             
             # Save the full assistant response
             print(f"Saving assistant response to DB: chat_id={chat_id}, role=assistant...")
@@ -131,4 +132,6 @@ async def send_chat_stream(
              f"data: {json.dumps({'content': '[DONE]', 'db_saved': False})}\n\n"),
             media_type="text/event-stream",
             status_code=500
-        )
+        )     
+        
+    
