@@ -1,4 +1,4 @@
-import useThemeStore from "../store/themeStore";
+import useThemeStore from "../stores/themeStore";
 import { themes } from "../utils/themes";
 
 export const useThemeStyles = () => {

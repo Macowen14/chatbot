@@ -3,9 +3,11 @@ from app.models.schemas import UserCreate, UserLogin, Token, User
 from app.utils.database import get_db
 from app.utils.auth import hash_password, create_access_token, verify_password, get_current_user
 
-router = APIRouter()
 
-@router.post("/register", response_model=Token, status_code=201)
+# Authentication routes
+auth_router = APIRouter()
+
+@auth_router.post("/register", response_model=Token, status_code=201)
 def register_user(user: UserCreate, db=Depends(get_db)):
     cur = db.cursor()
 
@@ -29,9 +31,7 @@ def register_user(user: UserCreate, db=Depends(get_db)):
     token = create_access_token({"sub": str(user_id)})
     return Token(access_token=token)
 
-
-
-@router.post("/login", response_model=Token)
+@auth_router.post("/login", response_model=Token)
 def login(user: UserLogin, db=Depends(get_db)):
     cur = db.cursor()
 
@@ -50,9 +50,7 @@ def login(user: UserLogin, db=Depends(get_db)):
     token = create_access_token({"sub": str(user_id)})
     return Token(access_token=token)
 
-
-
-@router.get('/me', response_model=User)
+@auth_router.get('/me', response_model=User)
 def get_user_details(current_user: str = Depends(get_current_user), db=Depends(get_db)):
     cur = db.cursor()
     cur.execute("SELECT username, email, imageurl FROM users WHERE id=%s", (current_user,))
@@ -62,8 +60,7 @@ def get_user_details(current_user: str = Depends(get_current_user), db=Depends(g
     return User(username=user[0], email=user[1], imageurl=user[2])
 
 
-
-@router.put('/me', response_model=User)
+@auth_router.put('/me', response_model=User)
 def update_user_username(new_username: str, current_user: str = Depends(get_current_user), db=Depends(get_db)):
     cur = db.cursor()
     cur.execute("SELECT id FROM users WHERE username=%s", (new_username,))
@@ -80,7 +77,7 @@ def update_user_username(new_username: str, current_user: str = Depends(get_curr
 
 
 
-@router.delete('/me', status_code=204)
+@auth_router.delete('/me', status_code=204)
 def delete_user(current_user: str = Depends(get_current_user), db=Depends(get_db)):
     cur = db.cursor()
     cur.execute("DELETE FROM users WHERE id=%s RETURNING id", (current_user,))
